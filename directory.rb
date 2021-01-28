@@ -1,14 +1,14 @@
 @students = []
 
 def input_student
-  puts "Please enter the names of the students"
+  puts "Please enter the names of the students and their cohort"
   puts "To finish, just hit return twice"
 
   months = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"]
+  months.each_with_index { |month, index| puts "#{index + 1}. #{month}" }
 
   name = STDIN.gets.chomp
-  months.each_with_index { |month, index| puts "#{index + 1}. #{month}" }
   month_number = STDIN.gets.strip
   cohort = months[month_number.to_i - 1]
 
@@ -54,6 +54,7 @@ def save_students
     csv_line = student_data.join(",")
     file.puts csv_line
   end
+  puts "The students list was saved"
   file.close
 end
 
@@ -72,7 +73,7 @@ end
 
 def try_load_students
   filename = ARGV.first
-  return if filename.nil?
+  filename = "students.csv" if filename.nil?
   if File.exists?(filename)
     load_students(filename)
     puts "Loaded #{@students.count} students from #{filename}"
