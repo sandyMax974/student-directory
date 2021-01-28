@@ -39,33 +39,11 @@ def print_footer
   puts "Overall, we have #{@students.count} great students"
 end
 
-def print_menu
-  puts "1. Input the students"
-  puts "2. Show the students"
-  puts "3. Save list of student to csv"
-  puts "9. Exit"
-end
-
 def show_student
   if @students.count > 0
     print_header
     print_student_list
     print_footer
-  end
-end
-
-def process(selection)
-  case selection
-    when "1"
-      input_student
-    when "2"
-      show_student
-    when "3"
-      save_students
-    when "9"
-      exit # exit program
-    else
-      puts "I didn't get that. Please try again."
   end
 end
 
@@ -77,6 +55,40 @@ def save_students
     file.puts csv_line
   end
   file.close
+end
+
+def load_students
+  file = File.open("students.csv","r")
+  file.readlines.each do |line|
+    name, cohort = line.chomp.split(",")
+    @students << {name: name, cohort: cohort.to_sym}
+  end
+  file.close
+end
+
+def process(selection)
+  case selection
+    when "1"
+      input_student
+    when "2"
+      show_student
+    when "3"
+      save_students
+    when "4"
+      load_students
+    when "9"
+      exit # exit program
+    else
+      puts "I didn't get that. Please try again."
+  end
+end
+
+def print_menu
+  puts "1. Input the students"
+  puts "2. Show the students"
+  puts "3. Save list to student.csv"
+  puts "4. Load list from student.csv"
+  puts "9. Exit"
 end
 
 def interactive_menu
