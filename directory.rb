@@ -7,18 +7,18 @@ def input_student
   months = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"]
 
-  name = gets.chomp
+  name = STDIN.gets.chomp
   months.each_with_index { |month, index| puts "#{index + 1}. #{month}" }
-  month_number = gets.strip
+  month_number = STDIN.gets.strip
   cohort = months[month_number.to_i - 1]
 
   while !name.empty? do
-    @students << {name: name, cohort: cohort}
+    students_insert(name, cohort)
     puts "Now we have #{@students.count} students"
-    name = gets.chomp
+    name = STDIN.gets.chomp
     if !name.empty?
       puts "Enter cohort month number"
-      month_number = gets.chomp
+      month_number = STDIN.gets.chomp
       cohort = months[month_number.to_i - 1]
     end
   end
@@ -57,13 +57,29 @@ def save_students
   file.close
 end
 
-def load_students
-  file = File.open("students.csv","r")
+def students_insert(name, cohort)
+  @students << {name: name, cohort: cohort.to_sym}
+end
+
+def load_students(filename = "students.csv")
+  file = File.open(filename,"r")
   file.readlines.each do |line|
     name, cohort = line.chomp.split(",")
-    @students << {name: name, cohort: cohort.to_sym}
+    students_insert(name, cohort)
   end
   file.close
+end
+
+def try_load_students
+  filename = ARGV.first
+  return if filename.nil?
+  if File.exists?(filename)
+    load_students(filename)
+    puts "Loaded #{@students.count} students from #{filename}"
+  else
+    puts "Sorry #{filename} doesn't exist"
+    exit
+  end
 end
 
 def process(selection)
@@ -92,9 +108,10 @@ def print_menu
 end
 
 def interactive_menu
+  try_load_students
   loop do
     print_menu
-    process(gets.chomp)
+    process(STDIN.gets.chomp)
   end
 end
 
