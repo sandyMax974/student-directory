@@ -1,16 +1,18 @@
 @students = []
 
+MONTHS = ["January", "February", "March", "April", "May", "June",
+"July", "August", "September", "October", "November", "December"]
+
+
 def input_student
   puts "Please enter the names of the students and their cohort"
   puts "To finish, just hit return twice"
 
-  months = ["January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"]
-  months.each_with_index { |month, index| puts "#{index + 1}. #{month}" }
+  MONTHS.each_with_index { |month, index| puts "#{index + 1}. #{month}" }
 
   name = STDIN.gets.chomp
   month_number = STDIN.gets.strip
-  cohort = months[month_number.to_i - 1]
+  cohort = MONTHS[month_number.to_i - 1]
 
   while !name.empty? do
     students_insert(name, cohort)
@@ -19,7 +21,7 @@ def input_student
     if !name.empty?
       puts "Enter cohort month number"
       month_number = STDIN.gets.chomp
-      cohort = months[month_number.to_i - 1]
+      cohort = MONTHS[month_number.to_i - 1]
     end
   end
 end
@@ -48,7 +50,9 @@ def show_student
 end
 
 def save_students
-  file = File.open("students.csv","w")
+  puts "Enter a file name to save the current student list to"
+  # filename = STDIN.gets.chomp
+  file = File.open(STDIN.gets.chomp,"w")
   @students.each do |student|
     student_data = [student[:name], student[:cohort]]
     csv_line = student_data.join(",")
@@ -62,8 +66,14 @@ def students_insert(name, cohort)
   @students << {name: name, cohort: cohort.to_sym}
 end
 
-def load_students(filename = "students.csv")
-  file = File.open(filename,"r")
+def load_students(filename = nil)
+  if !filename.nil?
+    file = File.open(filename,"r")
+  else
+    puts "Enter a file name to load"
+    file = File.open(STDIN.gets.chomp,"r")
+  end
+  @students.clear
   file.readlines.each do |line|
     name, cohort = line.chomp.split(",")
     students_insert(name, cohort)
@@ -101,11 +111,8 @@ def process(selection)
 end
 
 def print_menu
-  puts "1. Input the students"
-  puts "2. Show the students"
-  puts "3. Save list to student.csv"
-  puts "4. Load list from student.csv"
-  puts "9. Exit"
+  menu = ["1. Input the students", "2. Show the students", "3. Save list to file", "4. Load list from file", "9. Exit"]
+  menu.each { |action| puts action }
 end
 
 def interactive_menu
