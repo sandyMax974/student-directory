@@ -11,11 +11,11 @@ def input_student
   MONTHS.each_with_index { |month, index| puts "#{index + 1}. #{month}" }
 
   name = STDIN.gets.chomp
-  month_number = STDIN.gets.strip
+  month_number = STDIN.gets.strip # using other method than `chomp`
   cohort = MONTHS[month_number.to_i - 1]
 
   while !name.empty? do
-    students_insert(name, cohort)
+    students_insert(name, cohort) # refactored code to use a method - DRY
     puts "Now we have #{@students.count} students"
     name = STDIN.gets.chomp
     if !name.empty?
@@ -51,15 +51,14 @@ end
 
 def save_students
   puts "Enter a file name to save the current student list to"
-  # filename = STDIN.gets.chomp
-  file = File.open(STDIN.gets.chomp,"w")
-  @students.each do |student|
-    student_data = [student[:name], student[:cohort]]
-    csv_line = student_data.join(",")
-    file.puts csv_line
+  File.open(STDIN.gets.chomp,"w") do |file| # using a code block to access the file - no need to close file
+    @students.each do |student|
+      student_data = [student[:name], student[:cohort]]
+      csv_line = student_data.join(",")
+      file.puts csv_line
+    end
+    puts "The students list was saved to #{File.basename(file)}"
   end
-  puts "The students list was saved"
-  file.close
 end
 
 def students_insert(name, cohort)
@@ -72,6 +71,7 @@ def load_students(filename = nil)
   else
     puts "Enter a file name to load"
     file = File.open(STDIN.gets.chomp,"r")
+    puts "You are now in file #{File.basename(file)}"
   end
   @students.clear
   file.readlines.each do |line|
